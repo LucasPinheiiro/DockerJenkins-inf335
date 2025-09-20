@@ -28,30 +28,33 @@ pipeline {
       steps { checkout scm }
     }
 
-    stage('Build & Test') {
-      steps {
-        sh 'mvn -B -ntp -DskipTests=false clean verify'
-      }
-      post {
-        always {
-          // Publica relatórios de teste (JUnit + Surefire/Failsafe)
-          junit testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml',
-                allowEmptyResults: true
-        }
+  stage('Build & Test') {
+    steps {
+      dir('inf335prj4') {
+        sh 'mvn -B -ntp -DskipTests=false clean verify'   // on Windows: bat 'mvn ...'
       }
     }
+    post {
+      always {
+        // post runs at workspace root; use the full path
+        junit 'inf335prj4/target/surefire-reports/*.xml'
+      }
+    }
+  }
 
-    stage('Package') {
-      when { expression { fileExists('pom.xml') } }
-      steps {
-        sh 'mvn -B -ntp -DskipTests package'
-      }
-      post {
-        success {
-          archiveArtifacts artifacts: 'target/*.jar, target/*.war', fingerprint: true
-        }
+  stage('Package') {
+    steps {
+      dir('inf335prj4') {
+        sh 'mvn -B -ntp -DskipTests package'              // on Windows: bat 'mvn ...'
       }
     }
+    post {
+      success {
+        archiveArtifacts artifacts: 'inf335prj4/target/*.jar, inf335prj4/target/*.war',
+                          fingerprint: true
+      }
+    }
+  }
   }
 
   post {
