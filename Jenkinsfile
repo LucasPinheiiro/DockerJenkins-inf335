@@ -30,7 +30,7 @@ pipeline {
   stage('Build & Test') {
     steps {
       dir('inf335prj4') {
-        sh 'mvn -B -ntp -DskipTests=false clean verify'   // on Windows: bat 'mvn ...'
+        bat 'mvn -B -ntp -DskipTests=false clean verify'   // on Windows: bat 'mvn ...'
       }
     }
     post {
@@ -44,7 +44,7 @@ pipeline {
   stage('Package') {
     steps {
       dir('inf335prj4') {
-        sh 'mvn -B -ntp -DskipTests package'              // on Windows: bat 'mvn ...'
+        bat 'mvn -B -ntp -DskipTests package'              // on Windows: bat 'mvn ...'
       }
     }
     post {
